@@ -202,6 +202,7 @@ if __name__ == '__main__':
 
         app.run_server(debug=True, port=3389, host='0.0.0.0')
     elif args.mode == 'output':
+        df = dataframe if not args.group else groupsdataframe
         fig = plotImpacts(df[:-1], title=args.title, pulls=not args.noPulls and not args.group, pullrange=[-5,5])
         if ".html" in args.outputFile[-5:]:
             fig.write_html(args.outputFile)

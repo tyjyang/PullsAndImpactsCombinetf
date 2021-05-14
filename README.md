@@ -1,5 +1,5 @@
 # Setup
-Setup the necessary pip environment with
+Setup the necessary environment with
 ```bash
 pip install -r requirements.txt
 ```

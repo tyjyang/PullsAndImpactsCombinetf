@@ -51,7 +51,7 @@ def plotImpacts(df, title, pulls=False, pullrange=[-5,5]):
     )
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        xaxis_title="Impact on mass (GeV)",
+        xaxis_title="Impact on mass (MeV)",
         title={
             'text': title,
             'y':.999 if ndisplay > 100 else 0.98,

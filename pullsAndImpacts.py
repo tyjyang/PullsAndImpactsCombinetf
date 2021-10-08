@@ -79,7 +79,7 @@ def plotImpacts(df, title, pulls=False, pullrange=[-5,5]):
                     tick0=0.,
                     dtick=1 if pullrange[1]-pullrange[0] > 2.5 else 0.5,
                 ),
-            xaxis2_title="pull+constraint",
+            xaxis2_title="pull+constraint [MeV]",
             yaxis2=dict(range=[-1, ndisplay]),
             yaxis2_visible=False,
         )

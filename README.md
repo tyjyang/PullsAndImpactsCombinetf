@@ -1,6 +1,7 @@
 # Setup
 Setup the necessary environment with
 ```bash
+python3 -m venv env
 pip install -r requirements.txt
 ```
 Then ```. ./env/bin/activate``` before running (needed every time you open a new session)

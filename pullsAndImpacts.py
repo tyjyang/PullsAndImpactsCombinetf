@@ -99,13 +99,9 @@ def readFitInfoFromFile(filename, group=False, sort=None, ascending=True):
     name = "nuisance_group_impact_nois" if group else "nuisance_impact_nois"
     
     tree = rf["fitresults"]
-    impactHist= rf[name]
-    impactVal = impactHist.to_numpy()[0][0,:]
-    tot = tree[impactHist.axis(0).labels()[0]+"_err"].array(library="np")
-    ylabels = np.array(impactHist.axis(1).labels())
     
-    pulls = np.zeros(len(impactVal))
-    constraints = np.zeros(len(impactVal))
+    pulls = np.zeros_like(impactVal)
+    constraints = np.zeros_like(impactVal)
     if not group:
         pulls = np.array([tree[k].array()[0] for k in ylabels])
         constraints = np.array([tree[k+"_err"].array()[0] for k in ylabels])
@@ -170,8 +166,9 @@ groupsdataframe = pd.DataFrame()
 
 if __name__ == '__main__':
     args = parseArgs()
-    dataframe = readFitInfoFromFile(args.inputFile, False, sort=args.sort, ascending=args.ascending)
     groupsdataframe = readFitInfoFromFile(args.inputFile, True, sort=args.sort, ascending=args.ascending)
+    if not (args.group and args.mode == 'output'):
+        dataframe = readFitInfoFromFile(args.inputFile, False, sort=args.sort, ascending=args.ascending)
     if args.mode == "interactive":
         app.layout = html.Div([
                 dcc.Input(

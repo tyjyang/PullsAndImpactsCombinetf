@@ -14,6 +14,14 @@ def plotImpacts(df, title, pulls=False, pullrange=[-5,5]):
     
     fig = make_subplots(rows=1,cols=2 if pulls else 1,
             horizontal_spacing=0.1, shared_yaxes=True)
+
+    max_pull = np.max(df["pull"])
+    default_pr = pullrange == [-5, 5]
+    if max_pull == 0 and default_pr:
+        pullrange = [-1.1, 1.1]
+    elif default_pr:
+        r = np.max([1.1, max_pull])
+        pullrange = [-1*r, r]
     
     ndisplay = len(df)
     fig.add_trace(
@@ -59,7 +67,8 @@ def plotImpacts(df, title, pulls=False, pullrange=[-5,5]):
             'xanchor': 'center',
             'yanchor': 'top'},
         margin=dict(l=20,r=20,t=50,b=20),
-        xaxis=dict(range=[-25, 25],
+        #xaxis=dict(range=[-25, 25],
+        xaxis=dict(range=[-20, 20],
                 showgrid=True, gridwidth=2,gridcolor='LightPink',
                 zeroline=True, zerolinewidth=4, zerolinecolor='Gray',
                 tickmode='linear',
@@ -90,19 +99,15 @@ def readFitInfoFromFile(filename, group=False, sort=None, ascending=True):
     name = "nuisance_group_impact_nois" if group else "nuisance_impact_nois"
     
     tree = rf["fitresults"]
-    impactHist= rf[name]
-    impactVal = impactHist.to_numpy()[0][0,:]
-    tot = tree[impactHist.axis(0).labels()[0]+"_err"].array(library="np")
-    ylabels = np.array(impactHist.axis(1).labels())
     
-    pulls = np.zeros(len(impactVal))
-    constraints = np.zeros(len(impactVal))
+    pulls = np.zeros_like(impactVal)
+    constraints = np.zeros_like(impactVal)
     if not group:
         pulls = np.array([tree[k].array()[0] for k in ylabels])
         constraints = np.array([tree[k+"_err"].array()[0] for k in ylabels])
     
     idx = np.argsort(np.abs(impactVal))
-    impacts = np.append(impactVal[idx]*100, tot*100)
+    impacts = np.append(impactVal[idx]*100, tot[0]*100)
     labels = np.append(ylabels[idx], "Total")
     modlabel = labels
     pulls = np.append(pulls[idx], 0)
@@ -161,8 +166,9 @@ groupsdataframe = pd.DataFrame()
 
 if __name__ == '__main__':
     args = parseArgs()
-    dataframe = readFitInfoFromFile(args.inputFile, False, sort=args.sort, ascending=args.ascending)
     groupsdataframe = readFitInfoFromFile(args.inputFile, True, sort=args.sort, ascending=args.ascending)
+    if not (args.group and args.mode == 'output'):
+        dataframe = readFitInfoFromFile(args.inputFile, False, sort=args.sort, ascending=args.ascending)
     if args.mode == "interactive":
         app.layout = html.Div([
                 dcc.Input(
@@ -183,7 +189,7 @@ if __name__ == '__main__':
                     ],
                     placeholder='select sort criteria...',
 					style={
-						'width': '25%'
+						'width': '50%'
 					},
                     value=args.sort
                 ),
@@ -204,7 +210,7 @@ if __name__ == '__main__':
         app.run_server(debug=True, port=3389, host=args.interface)
     elif args.mode == 'output':
         df = dataframe if not args.group else groupsdataframe
-        fig = plotImpacts(df[:-1], title=args.title, pulls=not args.noPulls and not args.group, pullrange=[-5,5])
+        fig = plotImpacts(df, title=args.title, pulls=not args.noPulls and not args.group, pullrange=[-5,5])
         if ".html" in args.outputFile[-5:]:
             fig.write_html(args.outputFile)
         else:

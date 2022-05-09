@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # 2 input parameters: $1 = -g for grouped impacts, $2 for the key of the study
-cd $pdf_unc_dir/CMSSW_12_0_1/src && cmsenv && cd -
-. $plot_impact_dir/env/bin/activate
+#cd $pdf_unc_dir/CMSSW_12_0_1/src && cmsenv && cd -
+#. $plot_impact_dir/env/bin/activate
 declare -a pdfs=("nnpdf31" "ct18" "mmht")
 #declare -a pdfs=("nnpdf30")
 declare -a pseudo_datas=(
